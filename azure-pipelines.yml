@@ -5,7 +5,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  imageName: 'pipelines-go:$(build.buildId)'
+  imageRepository: 'powerchord-qa/pipelines-go'
 
 steps:
 - task: Docker@2
@@ -23,7 +23,7 @@ steps:
   displayName: Push image to GCR
   inputs:
     command: push
-    repository: $(imageName)
+    repository: $(imageRepository)
     tags: $(build.buildId)
 
 - task: Docker@2
