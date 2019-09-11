@@ -17,7 +17,8 @@ steps:
   displayName: 'Docker build'
   inputs:
     command: build
-    tags: $(imageName)
+    repository: $(imageRepository)
+    tags: $(build.buildId)
 
 - task: Docker@2
   displayName: Push image to GCR
