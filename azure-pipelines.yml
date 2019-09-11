@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 
@@ -13,6 +8,26 @@ variables:
   imageName: 'pipelines-go:$(build.buildId)'
 
 steps:
-- script: docker build -f Dockerfile -t $(imageName) .
+- task: Docker@2
+  displayName: Login to GCR
+  inputs:
+    command: login
+    containerRegistry: GoogleContainerRegistryQA
+- task: Docker@2
   displayName: 'Docker build'
+  inputs:
+    command: build
+    tags: $(imageName)
 
+- task: Docker@2
+  displayName: Push image to GCR
+  inputs:
+    command: push
+    repository: powerchord-qa/demo-pipeline
+    tags: $(build.buildId)
+
+- task: Docker@2
+  displayName: Logout from GCR
+  inputs:
+    command: Logout
+    containerRegistry: GoogleContainerRegistryQA
