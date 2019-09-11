@@ -23,7 +23,7 @@ steps:
   displayName: Push image to GCR
   inputs:
     command: push
-    repository: powerchord-qa/demo-pipeline
+    repository: $(imageName)
     tags: $(build.buildId)
 
 - task: Docker@2
