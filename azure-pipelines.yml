@@ -5,7 +5,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  imageRepository: 'gcr.io/powerchord-qa/pipelines-go'
+  imageRepository: 'grc.io/powerchord-qa/pipelines-go'
 
 steps:
 - task: Docker@2
