@@ -41,7 +41,7 @@ steps:
     repositoryName: '$(Build.Repository.Name)'
     action: 'create'
     target: '$(Build.SourceVersion)'
-    tagSource: 'gitTag'
+    tagSource: 'User specified tag'
     releaseNotesSource: 'inline'
     tag: '$(Build.BuildNumber)'
     changeLogCompareToRelease: 'lastFullRelease'
