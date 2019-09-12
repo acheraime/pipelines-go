@@ -1,4 +1,4 @@
-trigger:
+ trigger:
 - master
 
 pool:
@@ -33,6 +33,7 @@ steps:
     command: Logout
     containerRegistry: GoogleContainerRegistryQA
 
+
 - task: GitHubRelease@1
   displayName: Github Release
   inputs:
@@ -42,5 +43,6 @@ steps:
     target: '$(Build.SourceVersion)'
     tagSource: 'gitTag'
     releaseNotesSource: 'inline'
+    tag: '$(Build.BuildNumber)'
     changeLogCompareToRelease: 'lastFullRelease'
     changeLogType: 'commitBased'
