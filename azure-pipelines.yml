@@ -32,3 +32,15 @@ steps:
   inputs:
     command: Logout
     containerRegistry: GoogleContainerRegistryQA
+
+- task: GitHubRelease@1
+  displayName: Github Release
+  inputs:
+    gitHubConnection: 'acheraimeHub'
+    repositoryName: '$(Build.Repository.Name)'
+    action: 'create'
+    target: '$(Build.SourceVersion)'
+    tagSource: 'gitTag'
+    releaseNotesSource: 'inline'
+    changeLogCompareToRelease: 'lastFullRelease'
+    changeLogType: 'commitBased'
