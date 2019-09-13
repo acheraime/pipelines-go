@@ -40,24 +40,14 @@ steps:
     go get github.com/axw/gocov/gocov
     go get github.com/AlekSi/gocov-xml
     go get -u gopkg.in/matm/v1/gocov-html
-    go get github.com/Microsoft/ApplicationInsights-Go/appinsights
     go test -v -coverprofile=coverage.txt -covermode count . 2>&1 | go-junit-report > report.xml
     gocov convert coverage.txt > coverage.json
     gocov-xml < coverage.json > coverage.xml
     mkdir coverage
+    ls -al
     gocov-html < coverage.json > coverage/index.html
   workingDirectory: '$(modulePath)'
   displayName: 'Run unit test'
-
-- script: |
-    go get github.com/laher/goxc
-    cp $(system.defaultWorkingDirectory)/.goxc.json .
-    pwd
-    ls -la 
-    cat .goxc.json
-    goxc 
-  workingDirectory: '$(modulePath)'
-  displayName: 'Create a multi platform build'
 
 - task: PublishTestResults@2
   inputs:
