@@ -2,12 +2,83 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-16.04'
 
 variables:
   imageRepository: 'powerchord-qa/pipelines-go'
+  GOBIN: '$(GOPATH)/bin'
+  GOROOT: '/usr/local/go1.11'
+  GOPATH: '$(system.defaultWorkingDirectory)/gopath'
+  modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)'
 
 steps:
+- script: |
+    mkdir -p '$(GOBIN)'
+    mkdir -p '$(GOPATH)/pkg'
+    mkdir -p '$(modulePath)'
+    shopt-s exitglob
+    mv !(gopath) '$(modulePath)'
+    echo '##vso[task.prependpath]$(GOBIN)'
+    echo '##vso[task.prependpath]$(GOROOT)/bin'
+    go version
+  displayName: 'Prep GO workspace'
+
+- script: |
+    pwd
+    ls -al
+    go get -v -t -d ./...
+    if [ -f Gopkg.toml ]; then
+        curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+        dep ensure
+    fi  
+    go build -v ./app
+  workingDirectory: '$(modulePath)'
+  displayName: 'Install dependencies'
+  
+- script:
+    go get github.com/jstemmer/go-junit-report
+    go get github.com/axw/gocov/gocov
+    go get github.com/AlekSi/gocov-xml
+    go get -u gopkg.in/matm/v1/gocov-html
+    go test -v -coverprofile=coverage.txt -covermode count . 2>&1 | go-junit-report > report.xml
+    gocov convert coverage.txt > coverage.json
+    gocov-xml < coverage.json > coverage.xml
+    mkdir coverage
+    gocov-html < coverage.json > coverage/index.html
+  workingDirectory: '$(modulePath)'
+  displayName: 'Run unit test'
+
+- script: |
+    go get github.com/laher/goxc
+    cp $(system.defaultWorkingDirectory)/.goxc.json .
+    pwd
+    ls -la 
+    cat .goxc.json
+    goxc 
+  workingDirectory: '$(modulePath)'
+  displayName: 'Create a multi platform build'
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: JUnit
+    testResultsFiles: $(System.DefaultWorkingDirectory)/**/report.xml
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: Cobertura 
+    summaryFileLocation: $(System.DefaultWorkingDirectory)/**/coverage.xml
+    reportDirectory: $(System.DefaultWorkingDirectory)/**/coverage
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: $(modulePath)/dist/snapshot/
+    artifactName: drop
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: $(modulePath)/ReleaseNote.txt
+    artifactName: releaseNote
+    
 - task: Docker@2
   displayName: Login to GCR
   inputs:
