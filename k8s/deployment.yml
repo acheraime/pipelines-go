@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azurego
+spec:
+  selector:
+    matchLabels:
+      app: azurego
+  template:
+    metadata:
+      labels:
+        app: azurego
+    spec:
+      containers:
+      - name: azurego
+        image: gcr.io/powerchord-qa
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+
+      env:
+        - name: HTTP_PLATFORM_PORT
+          value: 8080
+
