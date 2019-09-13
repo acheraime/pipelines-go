@@ -40,6 +40,7 @@ steps:
     go get github.com/axw/gocov/gocov
     go get github.com/AlekSi/gocov-xml
     go get -u gopkg.in/matm/v1/gocov-html
+    go get github.com/Microsoft/ApplicationInsights-Go/appinsights
     go test -v -coverprofile=coverage.txt -covermode count . 2>&1 | go-junit-report > report.xml
     gocov convert coverage.txt > coverage.json
     gocov-xml < coverage.json > coverage.xml
@@ -78,7 +79,7 @@ steps:
   inputs:
     PathtoPublish: $(modulePath)/ReleaseNote.txt
     artifactName: releaseNote
-    
+
 - task: Docker@2
   displayName: Login to GCR
   inputs:
