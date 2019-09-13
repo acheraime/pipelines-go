@@ -60,16 +60,6 @@ steps:
     summaryFileLocation: $(System.DefaultWorkingDirectory)/**/coverage.xml
     reportDirectory: $(System.DefaultWorkingDirectory)/**/coverage
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: $(modulePath)/dist/snapshot/
-    artifactName: drop
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: $(modulePath)/ReleaseNote.txt
-    artifactName: releaseNote
-
 - task: Docker@2
   displayName: Login to GCR
   inputs:
